@@ -1,0 +1,6 @@
+backend/node_modules
+backend/tsconfig.json
+frontend/eslint.config.js
+
+#firebase config
+backend/firebase-key.json
