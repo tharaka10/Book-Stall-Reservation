@@ -12,8 +12,8 @@ const Register: React.FC = () => {
                 <img src={RegisterImage} alt="Register Image" className="max-w-full h-auto object-contain"/>
             </div>
             {/**Right section of the card */}
-            <div className="w-2/3 flex flex-col items-center">
-                <h1 className="text-3xl font-bold text-center text-amber-600 p-5 px-5 mt-5">
+            <div className="w-2/3 flex flex-col justify-center items-center px-10">
+                <h1 className="text-3xl font-bold text-yellow-600 mb-2 text-center">
                     Welcome to Colombo International Book Fair
                 </h1>
                 <p className="text-sm text-gray-300 mb-2">
@@ -79,7 +79,7 @@ const Register: React.FC = () => {
                         </button>
                         <div className="text-center mt-5 text-gray-300">
                             <p>Already have an Account?{' '}
-                            <a href="" className="text-amber-300 hover:underline">
+                            <a href="/login" className="text-amber-300 hover:underline">
                                 Login
                             </a>
                             </p>
