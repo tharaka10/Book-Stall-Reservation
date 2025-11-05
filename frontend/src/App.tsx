@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Register from './pages/Register';
+import Login from './pages/Login';
  
 
 function App() {
@@ -12,6 +13,11 @@ function App() {
         }>
         
         </Route>
+        <Route 
+        path="/login"
+        element={
+          <Login/>
+        }></Route>
       </Routes>
     </BrowserRouter>
   )
