@@ -14,8 +14,10 @@ build/
 .env.development
 .env.production
 .env.test
+backend/.env
 backend/firebase-key.json
 backend/firebase-service-account.json
+backend/config/firebase-service-account.json
 
 # TypeScript configs and cache
 *.tsbuildinfo
