@@ -4,5 +4,6 @@ frontend/eslint.config.js
 
 #firebase config
 backend/firebase-key.json
+backend/config/firebase-service-account.json
 
 node_modules/
