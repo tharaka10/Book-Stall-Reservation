@@ -1,8 +1,35 @@
-import React from "react";
+import React, { useState } from "react";
 import LoginImage from "../assets/Login.svg";
 import Google from "../assets/Google.svg";
+import axios from "axios";
 
 const Login: React.FC = () => {
+    const [formData, setFormData] = useState({email: "", password: ""});
+    const [message, setMessage] = useState("");
+    const [isError, setIsError] = useState(false);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value});
+    };
+
+    const handleSubmit = async(e: React.FormEvent) => {
+        e.preventDefault();
+        setMessage("");
+        setIsError(false);
+
+        try{
+            const res = await axios.post("http://localhost:5000/api/auth/login",formData);
+            setMessage("Login Successful");
+            setIsError(false); // success message
+            console.log(res.data);
+            // localStorage.setItem("token", res.data.token);
+        } catch (err: any) {
+            console.error(err);
+            setMessage(err.response?.data?.message || "Login failed");
+            setIsError(true);
+        }
+    };
+
     return(
         <div className="flex min-h-screen w-full bg-black text-white m-0 p-0 overflow-hidden">
             {/**Left section of the image */}
@@ -26,18 +53,24 @@ const Login: React.FC = () => {
                     Login to Your Account!
                 </h2>
                 {/**Login form */}
-                <form className="w-full max-w-md space-y-4">
+                <form className="w-full max-w-md space-y-4" onSubmit={handleSubmit}>
                     <div className="relative">
                         <input
                         type="email"
+                        name="email"
                         placeholder="Enter Email"
+                        value={formData.email}
+                        onChange={handleChange}
                         className="w-full p-3 pl-4 rounded-lg bg-yellow-800/30 border-none focus:ring-2 focus:ring-yellow-600 text-white placeholder-gray-400"
                         />
                     </div>
                     <div className="relative">
                         <input 
                         type="password"
+                        name="password"
                         placeholder="Enter Password"
+                        value={formData.password}
+                        onChange={handleChange}
                         className="w-full p-3 pl-4 rounded-lg bg-yellow-800/30 border-none focus:ring-2 focus:ring-yellow-600 text-white placeholder-gray-400"/>
                         
 
@@ -63,6 +96,11 @@ const Login: React.FC = () => {
                     type="submit">
                         Login
                     </button>
+                    {message && <p
+                className={`text-center mt-3 font-semibold ${
+                  isError ? "text-red-400" : "text-green-400"
+                }`}
+                 >{message}</p>}
                 </div>
                 {/**Google login */}
                 <button className="w-full flex items-center gap-3 text-black px-6 rounded-full justify-center">

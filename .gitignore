@@ -16,6 +16,7 @@ build/
 .env.test
 backend/.env
 backend/firebase-key.json
+backend/config/firebase-service-account.json
 backend/firebase-service-account.json
 backend/config/firebase-service-account.json
 
