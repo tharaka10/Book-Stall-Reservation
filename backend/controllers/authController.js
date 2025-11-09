@@ -29,6 +29,7 @@ export const registerUser = async (req, res) => {
       password,
       displayName: `${firstName} ${lastName}`,
       phoneNumber: formattedPhoneNumber,
+      phoneNumber,
     });
 
     // Save to Firestore
@@ -37,6 +38,7 @@ export const registerUser = async (req, res) => {
       lastName,
       email,
       phoneNumber: formattedPhoneNumber,
+      phoneNumber,
       createdAt: new Date(),
     });
 

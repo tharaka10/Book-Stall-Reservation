@@ -26,6 +26,7 @@ import reservationRoutes from "./routes/reservationRoutes.js";
 import dotenv from "dotenv"
 
 dotenv.config();
+
 const app = express();
 
 // ✅ Use CORS properly
