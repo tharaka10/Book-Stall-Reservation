@@ -23,7 +23,7 @@ import express from "express";
 import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
 import reservationRoutes from "./routes/reservationRoutes.js";
-import dotenv from "dotenv"
+import dotenv from "dotenv";
 
 dotenv.config();
 const app = express();
