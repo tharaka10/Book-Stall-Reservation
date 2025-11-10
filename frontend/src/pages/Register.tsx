@@ -127,7 +127,6 @@ const Register: React.FC = () => {
               required
             />
           </div>
-
           <input
             type="password"
             name="password"
