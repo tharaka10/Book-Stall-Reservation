@@ -21,7 +21,7 @@ const ProtectedRoute: React. FC<ProtectedRouteProps> = ({ children, allowedRoles
     try {
         const decoded: DecodedToken = jwtDecode(token);
 
-        // expiry check
+        // check expiry
         if (decoded.exp * 1000 <Date.now()) {
             localStorage.removeItem("token");
             return <Navigate to="/login" replace />;

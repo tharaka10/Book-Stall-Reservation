@@ -29,6 +29,7 @@ const Login: React.FC = () => {
             setIsError(false); // success message
             console.log("token", token);
 
+            
             if(role === "publisher") {
                 window.location.href = "/publisher";
             } else if(role === "organizer") {
