@@ -18,11 +18,24 @@ const Login: React.FC = () => {
         setIsError(false);
 
         try{
+            //login and get token
             const res = await axios.post("http://localhost:5000/api/auth/login",formData);
+            const token = res.data.token;
+    
+            localStorage.setItem("token", token);
+            localStorage.setItem("role", res.data.role);
+            
             setMessage("Login Successful");
             setIsError(false); // success message
-            console.log(res.data);
-            // localStorage.setItem("token", res.data.token);
+            console.log("token", token);
+
+            // test of token works
+            const test = await axios.get("http://localhost:5000/api/auth/protected", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            console.log("Protected route response", test.data);
         } catch (err: any) {
             console.error(err);
             setMessage(err.response?.data?.message || "Login failed");
