@@ -20,15 +20,20 @@ const Login: React.FC = () => {
         try{
             //login and get token
             const res = await axios.post("http://localhost:5000/api/auth/login",formData);
-            const token = res.data.token;
+            const {token, role} = res.data;
     
             localStorage.setItem("token", token);
-            localStorage.setItem("role", res.data.role);
+            localStorage.setItem("role", role);
             
             setMessage("Login Successful");
             setIsError(false); // success message
             console.log("token", token);
 
+            if(role === "publisher") {
+                window.location.href = "/publisher";
+            } else if(role === "organizer") {
+                window.location.href = "/organizer";
+            }
             // test of token works
             const test = await axios.get("http://localhost:5000/api/auth/protected", {
                 headers: {
