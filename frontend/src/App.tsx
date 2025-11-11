@@ -1,9 +1,10 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Register from './pages/Register';
 import Login from './pages/Login';
-import PublisherDashboard from './pages/PublisherDashboard';
+// import PublisherDashboard from './pages/PublisherDashboard';
 import OrganizerDashboard from './pages/OrganizerDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
+import StallMap from './pages/StallMap';
 
 function App() {
   return (
@@ -21,13 +22,27 @@ function App() {
           <Login/>
         }>
         </Route>
+        <Route 
+        path="/stallmap"
+        element={
+          <StallMap/>
+        }>
+        </Route>
 
         {/* Protected routes */}
-        <Route
+        {/* <Route
           path="/publisher"
           element={
             <ProtectedRoute allowedRoles={["publisher"]}>
               <PublisherDashboard />
+            </ProtectedRoute>
+          }
+        /> */}
+        <Route
+          path="/publisher"
+          element={
+            <ProtectedRoute allowedRoles={["publisher"]}>
+              <StallMap />
             </ProtectedRoute>
           }
         />
