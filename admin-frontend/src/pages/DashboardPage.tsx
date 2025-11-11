@@ -7,6 +7,7 @@ import {
   Users,
   Clock,
   ArrowRight,
+  Map, // Import the Map icon
 } from "lucide-react";
 import {
   ResponsiveContainer,
@@ -166,7 +167,7 @@ export default function DashboardPage() {
           value={stats.availableStalls}
           Icon={ClipboardList}
           color="text-green-500"
-          bgColor="bg-green-50"
+          bgColor="bg-green-5a0"
         />
         <StatCard
           title="Total Publishers"
@@ -181,54 +182,66 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Stall Status Chart */}
-        <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-md">
-          <h2 className="text-xl font-bold mb-4">Stall Status</h2>
-          <div style={{ width: "100%", height: 300 }}>
-            <ResponsiveContainer>
-              <PieChart>
-                <Pie
-                  data={chartData}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={100}
-                  fill="#8884d8"
-                  dataKey="value"
-                  //label={(entry) => `${entry.name} (${entry.value})`}
-                >
-                  <Cell fill="#f63f3a" /> {/* Reserved - Red */}
-                  <Cell fill="#7AC142" /> {/* Available - Green */}
-                  <Cell fill="#FFAB05" /> {/* Maintenance - Grey */}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
+        <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-md flex flex-col justify-between">
+          <div>
+            <h2 className="text-xl font-bold mb-4">Stall Status</h2>
+            <div style={{ width: "100%", height: 300 }}>
+              <ResponsiveContainer>
+                <PieChart>
+                  <Pie
+                    data={chartData}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={100}
+                    fill="#8884d8"
+                    dataKey="value"
+                    //label={(entry) => `${entry.name} (${entry.value})`}
+                  >
+                    <Cell fill="#F44336" /> {/* Reserved - Red */}
+                    <Cell fill="#4CAF50" /> {/* Available - Green */}
+                    <Cell fill="#9E9E9E" /> {/* Maintenance - Grey */}
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
           </div>
+          {/* --- NEWLY ADDED LINK --- */}
+          <Link
+            to="/stalls"
+            className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium mt-4"
+          >
+            <Map className="w-4 h-4" />
+            View Stall Map & Manage
+          </Link>
         </div>
 
         {/* Recent Reservations List */}
-        <div className="bg-white p-6 rounded-xl shadow-md">
-          <h2 className="text-xl font-bold mb-4">Recent Reservations</h2>
-          <div className="space-y-4">
-            {recentReservations.length === 0 ? (
-              <p className="text-gray-500">No recent reservations.</p>
-            ) : (
-              recentReservations.map((res) => (
-                <div key={res.id} className="flex items-center gap-3">
-                  <div className="p-2 bg-gray-100 rounded-full">
-                    <Clock className="w-5 h-5 text-gray-500" />
+        <div className="bg-white p-6 rounded-xl shadow-md flex flex-col justify-between">
+          <div>
+            <h2 className="text-xl font-bold mb-4">Recent Reservations</h2>
+            <div className="space-y-4">
+              {recentReservations.length === 0 ? (
+                <p className="text-gray-500">No recent reservations.</p>
+              ) : (
+                recentReservations.map((res) => (
+                  <div key={res.id} className="flex items-center gap-3">
+                    <div className="p-2 bg-gray-100 rounded-full">
+                      <Clock className="w-5 h-5 text-gray-500" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-800">
+                        {res.publisherName}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        Booked {res.stalls.join(", ")}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-medium text-gray-800">
-                      {res.publisherName}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      Booked {res.stalls.join(", ")}
-                    </p>
-                  </div>
-                </div>
-              ))
-            )}
+                ))
+              )}
+            </div>
           </div>
           <Link
             to="/reservations"
