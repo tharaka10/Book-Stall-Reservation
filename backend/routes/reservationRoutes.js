@@ -5,11 +5,13 @@ import {
 	getUserReservations,
 	adminUsersWithStalls,
 	getReserverByStall,
+	getStalls,
 } from "../controllers/reservationController.js";
 
 const router = express.Router();
 
 // Public/API
+router.get("/stalls", getStalls); // needed by map to render availability
 router.post("/reserve", reserveStalls); // Reserve stalls (max 3 enforced)
 router.get("/user/:email/reservations", getUserReservations); // View user's reservations
 
