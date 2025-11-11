@@ -1,3 +1,11 @@
+
+import { generateAndUploadQR } from "../services/qrService.js";
+import { sendReservationEmail } from "../services/emailService.js";
+import { reserveStalls } from "./stallController.js"; // reuse it
+
+export const confirmReservation = async (req, res) => {
+  try {
+
 // import { generateAndUploadQR } from "../services/qrService.js";
 // import { sendReservationEmail } from "../services/emailService.js";
 
@@ -268,6 +276,7 @@ export const getStalls = async (req, res) => {
 export const reserveStalls = async (req, res) => {
   const conn = await pool.getConnection();
   try {
+
     const { reservationId, email, stalls, publisherName } = req.body;
     console.log("🟢 Received reservation:", {
       reservationId,
@@ -286,6 +295,10 @@ export const reserveStalls = async (req, res) => {
     // 🔹 Generate QR and upload to Firebase
     const qrUrl = await generateAndUploadQR(reservationId, email, publisherName);
 
+      // ✅ Send email with QR code
+    await sendReservationEmail(email, { id: reservationId, stalls, publisherName }, qrUrl);
+
+
     // 🔹 Send email with QR code
     await sendReservationEmail(
       email,
@@ -293,10 +306,14 @@ export const reserveStalls = async (req, res) => {
       qrUrl
     );
 
-    res.status(200).json({
-      message: "Reservation confirmed, QR uploaded & email sent!",
+
+    res.status(200).json({message: "Reservation confirmed, QR uploaded & email sent!",
       qrUrl,
     });
+
+  } catch (err) {console.error("❌ Reservation failed:", err);
+    res.status(500).json({ message: "Failed to process reservation", error: err.message });
+
   } catch (err) {
     console.error("❌ Reservation failed:", err);
     res.status(500).json({
@@ -402,12 +419,6 @@ export const getReserverByStall = async (req, res) => {
       message: "Failed to fetch reserver details",
       error: err.message,
     });
-  }
-};
 
-export default {
-  reserveStalls,
-  getUserReservations,
-  adminUsersWithStalls,
-  getReserverByStall,
+  }
 };

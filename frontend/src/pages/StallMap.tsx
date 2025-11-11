@@ -221,7 +221,7 @@ const StallMap: React.FC = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/reservations/confirm",
+        "http://localhost:5000/api/reservations/reserve",
         {
           reservationId: Date.now().toString(),
           email: publisherEmail,
