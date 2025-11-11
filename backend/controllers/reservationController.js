@@ -24,9 +24,9 @@ export const getStalls = async (req, res) => {
 export const reserveStalls = async (req, res) => {
   const conn = await pool.getConnection();
   try {
-    const { email, publisherName, stallIds } = req.body;
-    if (!email || !Array.isArray(stallIds) || stallIds.length === 0) {
-      return res.status(400).json({ message: "Invalid request: email and stallIds required" });
+    const { email, businessName, phone, address, stallIds } = req.body;
+    if (!email || !businessName || !Array.isArray(stallIds) || stallIds.length === 0) {
+      return res.status(400).json({ message: "Invalid request: email, businessName and stallIds are required" });
     }
 
     if (stallIds.length > 3) {
@@ -64,10 +64,11 @@ export const reserveStalls = async (req, res) => {
     }
 
     const reservationId = uuidv4();
-    // Insert reservation
+    // Insert reservation with contact details
     await conn.query(
-      `INSERT INTO reservations (id, user_email, publisher_name, status) VALUES (?,?,?, 'active')`,
-      [reservationId, email, publisherName]
+      `INSERT INTO reservations (id, user_email, business_name, phone_number, address, status)
+       VALUES (?,?,?,?,?, 'active')`,
+      [reservationId, email, businessName, phone || null, address || null]
     );
 
     // Insert reservation_stalls and mark stalls reserved
@@ -85,17 +86,33 @@ export const reserveStalls = async (req, res) => {
 
     await conn.commit();
 
-    // Generate QR and send email (outside DB transaction)
-    const qrUrl = await generateAndUploadQR(reservationId, email);
-    // Fetch stall names for email
+    // Generate a QR for each stall and save on reservation_stalls
     const [reservedStalls] = await pool.query(
-      `SELECT name FROM stalls WHERE id IN (${placeholders})`,
+      `SELECT id, name FROM stalls WHERE id IN (${placeholders})`,
       stallIds
     );
-    const stallNames = reservedStalls.map(s => s.name);
-    await sendReservationEmail(email, { id: reservationId, stalls: stallNames, publisherName }, qrUrl);
+    const qrResults = [];
+    for (const s of reservedStalls) {
+      const qrUrl = await generateAndUploadQR(reservationId, email, { stallId: s.id, stallName: s.name });
+      qrResults.push({ stallId: s.id, stallName: s.name, qrUrl });
+      await pool.query(
+        `UPDATE reservation_stalls SET qr_url = ? WHERE reservation_id = ? AND stall_id = ?`,
+        [qrUrl, reservationId, s.id]
+      );
+    }
 
-    res.status(201).json({ message: "Reservation successful", reservationId, qrUrl });
+    // Optionally send email (first QR only or extend template to multiple)
+    if (process.env.SEND_EMAIL === 'true') {
+      const stallNames = reservedStalls.map(s => s.name);
+      const firstQr = qrResults[0]?.qrUrl || null;
+      try {
+        await sendReservationEmail(email, { id: reservationId, stalls: stallNames, publisherName: businessName }, firstQr);
+      } catch (e) {
+        console.error('Email sending failed:', e.message);
+      }
+    }
+
+    res.status(201).json({ message: "Reservation successful", reservationId, stalls: qrResults });
   } catch (err) {
     console.error(err);
     try { await conn.rollback(); } catch (e) {}
@@ -109,14 +126,21 @@ export const getUserReservations = async (req, res) => {
   try {
     const { email } = req.params;
     const [rows] = await pool.query(
-      `SELECT r.id, r.user_email, r.publisher_name, r.status, r.created_at,
-        JSON_ARRAYAGG(s.name) as stalls
-      FROM reservations r
-      JOIN reservation_stalls rs ON r.id = rs.reservation_id
-      JOIN stalls s ON rs.stall_id = s.id
-      WHERE r.user_email = ?
-      GROUP BY r.id
-      ORDER BY r.created_at DESC`,
+      `SELECT 
+         r.id,
+         r.user_email,
+         r.business_name,
+         r.phone_number,
+         r.address,
+         r.status,
+         r.created_at,
+         JSON_ARRAYAGG(JSON_OBJECT('stallId', s.id, 'stallName', s.name, 'qrUrl', rs.qr_url)) as stalls
+       FROM reservations r
+       JOIN reservation_stalls rs ON r.id = rs.reservation_id
+       JOIN stalls s ON rs.stall_id = s.id
+       WHERE r.user_email = ?
+       GROUP BY r.id
+       ORDER BY r.created_at DESC`,
       [email]
     );
     res.json(rows);
@@ -130,12 +154,18 @@ export const getUserReservations = async (req, res) => {
 export const adminUsersWithStalls = async (req, res) => {
   try {
     const [rows] = await pool.query(
-      `SELECT r.user_email, r.publisher_name, GROUP_CONCAT(s.name SEPARATOR ', ') as stalls, COUNT(s.id) as stall_count
+      `SELECT 
+         r.user_email,
+         MAX(r.business_name) as business_name,
+         MAX(r.phone_number) as phone_number,
+         MAX(r.address) as address,
+         COUNT(s.id) as stall_count,
+         JSON_ARRAYAGG(JSON_OBJECT('stallId', s.id, 'stallName', s.name, 'qrUrl', rs.qr_url)) as stalls
        FROM reservations r
        JOIN reservation_stalls rs ON r.id = rs.reservation_id
        JOIN stalls s ON rs.stall_id = s.id
        WHERE r.status = 'active'
-       GROUP BY r.user_email, r.publisher_name
+       GROUP BY r.user_email
        ORDER BY stall_count DESC`
     );
     res.json(rows);
@@ -151,7 +181,7 @@ export const getReserverByStall = async (req, res) => {
     const { id } = req.params; // stall id
     // Find the active reservation that contains this stall
     const [rows] = await pool.query(
-      `SELECT r.id as reservation_id, r.user_email, r.publisher_name, r.status, r.created_at
+      `SELECT r.id as reservation_id, r.user_email, r.business_name, r.phone_number, r.address, r.status, r.created_at
        FROM reservations r
        JOIN reservation_stalls rs ON r.id = rs.reservation_id
        WHERE rs.stall_id = ? AND r.status = 'active' LIMIT 1`,
@@ -160,9 +190,9 @@ export const getReserverByStall = async (req, res) => {
     if (rows.length === 0) return res.status(404).json({ message: 'No active reservation found for this stall' });
 
     const reservation = rows[0];
-    // Get all stall names for that reservation
+    // Get all stall names (and QR URLs) for that reservation
     const [stalls] = await pool.query(
-      `SELECT s.id, s.name FROM stalls s JOIN reservation_stalls rs ON s.id = rs.stall_id WHERE rs.reservation_id = ?`,
+      `SELECT s.id, s.name, rs.qr_url FROM stalls s JOIN reservation_stalls rs ON s.id = rs.stall_id WHERE rs.reservation_id = ?`,
       [reservation.reservation_id]
     );
 
