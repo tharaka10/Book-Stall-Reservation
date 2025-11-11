@@ -33,18 +33,18 @@ export const reserveStalls = async (req, res) => {
       return res.status(400).json({ message: "Cannot reserve more than 3 stalls in one reservation" });
     }
 
-    await conn.beginTransaction();
+  await conn.beginTransaction();
 
     // Count currently reserved stalls for this user (active reservations)
     const [countRows] = await conn.query(
-      `SELECT COALESCE(SUM(rs.count),0) as total FROM (
-        SELECT COUNT(*) as count FROM reservation_stalls rs
-        JOIN reservations r ON rs.reservation_id = r.id
-        WHERE r.user_email = ? AND r.status = 'active'
-      ) as rs`,
+      `SELECT COUNT(*) AS total
+       FROM reservation_stalls rs
+       JOIN reservations r ON rs.reservation_id = r.id
+       WHERE r.user_email = ? AND r.status = 'active'`,
       [email]
     );
-    const currentCount = countRows[0].total || 0;
+    // Ensure numeric addition, not string concatenation
+    const currentCount = Number(countRows[0].total) || 0;
     if (currentCount + stallIds.length > 3) {
       await conn.rollback();
       return res.status(400).json({ message: `Reservation would exceed max 3 stalls per user (you already have ${currentCount})` });
@@ -60,7 +60,8 @@ export const reserveStalls = async (req, res) => {
     const unavailable = stalls.filter(s => s.is_reserved);
     if (unavailable.length > 0 || stalls.length !== stallIds.length) {
       await conn.rollback();
-      return res.status(400).json({ message: "One or more requested stalls are not available", unavailable });
+      const ids = unavailable.map(u => u.id);
+      return res.status(400).json({ message: ids.length > 0 ? `These stalls are already reserved: ${ids.join(', ')}` : 'Invalid stall id(s) provided', unavailable });
     }
 
     const reservationId = uuidv4();
@@ -71,14 +72,41 @@ export const reserveStalls = async (req, res) => {
       [reservationId, email, businessName, phone || null, address || null]
     );
 
-    // Insert reservation_stalls and mark stalls reserved
+    // Insert reservation_stalls with uniqueness handling (a stall can only be in one reservation)
     for (const stallId of stallIds) {
-      await conn.query(
-        `INSERT INTO reservation_stalls (reservation_id, stall_id) VALUES (?,?)`,
-        [reservationId, stallId]
-      );
+      try {
+        await conn.query(
+          `INSERT INTO reservation_stalls (reservation_id, stall_id) VALUES (?,?)`,
+          [reservationId, stallId]
+        );
+      } catch (e) {
+        if (e && e.code === 'ER_DUP_ENTRY') {
+          await conn.rollback();
+          return res.status(400).json({ message: `Stall ${stallId} is already reserved` });
+        }
+        throw e;
+      }
     }
 
+    // Generate a QR for each stall and save on reservation_stalls BEFORE committing.
+    // If any QR upload fails, roll back so that stalls remain unreserved and no reservation persists.
+    const qrResults = [];
+    for (const s of stalls) {
+      try {
+        const qrUrl = await generateAndUploadQR(reservationId, email, { stallId: s.id, stallName: s.name });
+        qrResults.push({ stallId: s.id, stallName: s.name, qrUrl });
+        await conn.query(
+          `UPDATE reservation_stalls SET qr_url = ? WHERE reservation_id = ? AND stall_id = ?`,
+          [qrUrl, reservationId, s.id]
+        );
+      } catch (qrErr) {
+        // Any failure -> rollback and surface error
+        await conn.rollback();
+        throw qrErr;
+      }
+    }
+
+    // Only mark stalls as reserved after QR URLs are successfully stored
     await conn.query(
       `UPDATE stalls SET is_reserved = 1 WHERE id IN (${placeholders})`,
       stallIds
@@ -86,24 +114,9 @@ export const reserveStalls = async (req, res) => {
 
     await conn.commit();
 
-    // Generate a QR for each stall and save on reservation_stalls
-    const [reservedStalls] = await pool.query(
-      `SELECT id, name FROM stalls WHERE id IN (${placeholders})`,
-      stallIds
-    );
-    const qrResults = [];
-    for (const s of reservedStalls) {
-      const qrUrl = await generateAndUploadQR(reservationId, email, { stallId: s.id, stallName: s.name });
-      qrResults.push({ stallId: s.id, stallName: s.name, qrUrl });
-      await pool.query(
-        `UPDATE reservation_stalls SET qr_url = ? WHERE reservation_id = ? AND stall_id = ?`,
-        [qrUrl, reservationId, s.id]
-      );
-    }
-
     // Optionally send email (first QR only or extend template to multiple)
     if (process.env.SEND_EMAIL === 'true') {
-      const stallNames = reservedStalls.map(s => s.name);
+      const stallNames = stalls.map(s => s.name);
       const firstQr = qrResults[0]?.qrUrl || null;
       try {
         await sendReservationEmail(email, { id: reservationId, stalls: stallNames, publisherName: businessName }, firstQr);

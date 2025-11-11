@@ -38,8 +38,12 @@ CREATE TABLE IF NOT EXISTS reservation_stalls (
   id INT AUTO_INCREMENT PRIMARY KEY,
   reservation_id VARCHAR(36) NOT NULL,
   stall_id INT NOT NULL,
-  qr_url VARCHAR(512),
+  -- Use TEXT to safely store long signed URLs from Firebase Storage
+  qr_url TEXT,
   FOREIGN KEY (reservation_id) REFERENCES reservations(id) ON DELETE CASCADE,
   FOREIGN KEY (stall_id) REFERENCES stalls(id) ON DELETE CASCADE
 );
+
+-- Ensure a stall can only belong to one active reservation at a time
+CREATE UNIQUE INDEX IF NOT EXISTS uq_reservation_stalls_stall_id ON reservation_stalls (stall_id);
 
