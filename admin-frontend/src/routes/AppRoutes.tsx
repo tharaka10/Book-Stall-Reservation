@@ -9,6 +9,8 @@ import DashboardPage from "../pages/DashboardPage";
 import ReservationsPage from "../pages/ReservationsPage";
 import StallsPage from "../pages/StallsPage";
 
+import StallMapTestPage from "../pages/StallMapTestPage"; // Import the new page
+
 export default function AppRoutes() {
   return (
     <Routes>
@@ -26,6 +28,10 @@ export default function AppRoutes() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/reservations" element={<ReservationsPage />} />
           <Route path="/stalls" element={<StallsPage />} />
+
+          {/* --- 2. Add your new temporary route --- */}
+          <Route path="/map-test" element={<StallMapTestPage />} />
+
         </Route>
       </Route>
 
