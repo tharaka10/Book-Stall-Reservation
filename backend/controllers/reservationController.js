@@ -1,4 +1,3 @@
-
 import { generateAndUploadQR } from "../services/qrService.js";
 import { sendReservationEmail } from "../services/emailService.js";
 import { reserveStalls } from "./stallController.js"; // reuse it
