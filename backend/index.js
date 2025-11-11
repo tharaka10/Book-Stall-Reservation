@@ -24,6 +24,7 @@ import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
 import reservationRoutes from "./routes/reservationRoutes.js";
 import dotenv from "dotenv";
+import stallRoutes from "./routes/stallRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -41,6 +42,7 @@ app.use(express.json());
 
 // ✅ Mount routes
 app.use("/api/auth", authRoutes);
+app.use("/api/stalls", stallRoutes);
 app.use("/api/reservations", reservationRoutes);
 
 const PORT = process.env.PORT || 5000;
