@@ -42,3 +42,4 @@ CREATE TABLE IF NOT EXISTS reservation_stalls (
   FOREIGN KEY (reservation_id) REFERENCES reservations(id) ON DELETE CASCADE,
   FOREIGN KEY (stall_id) REFERENCES stalls(id) ON DELETE CASCADE
 );
+
