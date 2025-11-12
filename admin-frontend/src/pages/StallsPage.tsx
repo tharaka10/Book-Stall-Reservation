@@ -3,13 +3,12 @@ import {
   Plus,
   X,
   ChevronDown,
-  CheckSquare,
-  XSquare,
   Wrench,
-  LayoutGrid, // Icon for Grid View
-  Map, // Icon for Map View
+  LayoutGrid,
+  Map,
 } from "lucide-react";
-//import API from "../services/api"; // For when you're ready to connect
+// Note: CheckSquare and XSquare are no longer used by the new map
+// and have been removed from imports.
 
 // --- Type Definitions ---
 type StallStatus = "Available" | "Reserved" | "Maintenance";
@@ -17,84 +16,93 @@ type StallSize = "Small" | "Medium" | "Large";
 
 interface Stall {
   id: string;
-  name: string;
+  name: string; // The "display name" like S1, M1, L1
   size: StallSize;
   status: StallStatus;
   publisherName?: string; // Optional: Who reserved it
 }
 
-// --- Mock Data (for development) ---
+// -------------------------------------
+// --- NEW MOCK DATA ---
+// This list is now based on the publisher's StallMap.tsx
+// (10 Small, 8 Medium, 6 Large)
+// -------------------------------------
 const mockStalls: Stall[] = [
-  {
-    id: "stall-001",
-    name: "A-01",
-    size: "Medium",
-    status: "Reserved",
-    publisherName: "Book Co. Lanka",
-  },
-  {
-    id: "stall-002",
-    name: "A-02",
-    size: "Medium",
-    status: "Available",
-  },
-  {
-    id: "stall-003",
-    name: "A-03",
-    size: "Small",
-    status: "Maintenance",
-  },
-  {
-    id: "stall-004",
-    name: "B-01",
-    size: "Large",
-    status: "Available",
-  },
-  {
-    id: "stall-005",
-    name: "B-02",
-    size: "Large",
-    status: "Reserved",
-    publisherName: "Readers Ltd.",
-  },
-  {
-    id: "stall-006",
-    name: "C-01",
-    size: "Small",
-    status: "Available",
-  },
-  {
-    id: "stall-007",
-    name: "C-02",
-    size: "Small",
-    status: "Reserved",
-    publisherName: "Pages Inc.",
-  },
+  // Small Stalls (10)
+  { id: "s-s1", name: "S1", size: "Small", status: "Available" },
+  { id: "s-s2", name: "S2", size: "Small", status: "Reserved", publisherName: "Book Co. Lanka" },
+  { id: "s-s3", name: "S3", size: "Small", status: "Available" },
+  { id: "s-s4", name: "S4", size: "Small", status: "Available" },
+  { id: "s-s5", name: "S5", size: "Small", status: "Maintenance" },
+  { id: "s-s6", name: "S6", size: "Small", status: "Available" },
+  { id: "s-s7", name: "S7", size: "Small", status: "Reserved", publisherName: "Pages Inc." },
+  { id: "s-s8", name: "S8", size: "Small", status: "Available" },
+  { id: "s-s9", name: "S9", size: "Small", status: "Available" },
+  { id: "s-s10", name: "S10", size: "Small", status: "Available" },
+  // Medium Stalls (8)
+  { id: "s-m1", name: "M1", size: "Medium", status: "Available" },
+  { id: "s-m2", name: "M2", size: "Medium", status: "Available" },
+  { id: "s-m3", name: "M3", size: "Medium", status: "Reserved", publisherName: "Kandy Books" },
+  { id: "s-m4", name: "M4", size: "Medium", status: "Available" },
+  { id: "s-m5", name: "M5", size: "Medium", status: "Available" },
+  { id: "s-m6", name: "M6", size: "Medium", status: "Available" },
+  { id: "s-m7", name: "M7", size: "Medium", status: "Maintenance" },
+  { id: "s-m8", name: "M8", size: "Medium", status: "Reserved", publisherName: "Galle Pubs" },
+  // Large Stalls (6)
+  { id: "s-l1", name: "L1", size: "Large", status: "Available" },
+  { id: "s-l2", name: "L2", size: "Large", status: "Reserved", publisherName: "Colombo Books" },
+  { id: "s-l3", name: "L3", size: "Large", status: "Available" },
+  { id: "s-l4", name: "L4", size: "Large", status: "Available" },
+  { id: "s-l5", name: "L5", size: "Large", status: "Reserved", publisherName: "Readers Ltd." },
+  { id: "s-l6", name: "L6", size: "Large", status: "Available" },
 ];
-// --- End Mock Data ---
 
 // -------------------------------------
-// --- MAP LAYOUT CONSTANT ---
+// --- LAYOUT DATA From Publisher Map ---
 // -------------------------------------
-// This is the "brain" of the map view.
-// It maps a stall name (e.g., "A-01") to its position and size on the map.
-// We are using Tailwind's `top`, `left`, `width`, `height` for positioning.
-// This is a simplified layout based on your mock data and BMICH image.
-// `top` and `left` are percentages to keep it somewhat responsive.
+// This is the exact layout from StallMap.tsx
+const stallPositions: Record<string, { top: string; left: string }> = {
+  // Small stalls
+  S1: { top: "5.33%", left: "28.33%" },
+  S2: { top: "5.33%", left: "37.5%" },
+  S3: { top: "5.33%", left: "46.67%" },
+  S4: { top: "5.33%", left: "55.83%" },
+  S5: { top: "5.33%", left: "65%" },
+  S6: { top: "21.87%", left: "28.33%" },
+  S7: { top: "21.87%", left: "37.5%" },
+  S8: { top: "21.87%", left: "46.67%" },
+  S9: { top: "21.87%", left: "55.83%" },
+  S10: { top: "21.87%", left: "65%" },
+  // Medium stalls
+  M1: { top: "41.07%", left: "27.58%" },
+  M2: { top: "41.07%", left: "39.42%" },
+  M3: { top: "41.07%", left: "51.25%" },
+  M4: { top: "41.07%", left: "63.08%" },
+  M5: { top: "59.73%", left: "27.58%" },
+  M6: { top: "59.73%", left: "39.42%" },
+  M7: { top: "59.73%", left: "51.25%" },
+  M8: { top: "59.73%", left: "63.08%" },
+  // Large stalls
+  L1: { top: "81.07%", left: "7.75%" },
+  L2: { top: "81.07%", left: "22.25%" },
+  L3: { top: "81.07%", left: "36.75%" },
+  L4: { top: "81.07%", left: "51.25%" },
+  L5: { top: "81.07%", left: "65.75%" },
+  L6: { top: "81.07%", left: "80.25%" },
+};
 
-const stallLayout: { [key: string]: React.CSSProperties } = {
-  // "Red" Block (Large Stalls)
-  "B-01": { top: "10%", left: "40%", width: "20%", height: "10%" },
-  "B-02": { top: "22%", left: "40%", width: "20%", height: "10%" },
-
-  // "Yellow" Block (Small Stalls)
-  "C-01": { top: "10%", left: "5%", width: "8%", height: "8%" },
-  "C-02": { top: "10%", left: "15%", width: "8%", height: "8%" },
-  "A-03": { top: "20%", left: "5%", width: "8%", height: "8%" },
-
-  // "Blue" Block (Medium Stalls)
-  "A-01": { top: "40%", left: "70%", width: "12%", height: "8%" },
-  "A-02": { top: "40%", left: "83%", width: "12%", height: "8%" },
+// Adapted from the publisher's getStallSize function
+const getStallSize = (size: StallSize): { width: string; height: string } => {
+  switch (size) {
+    case "Small":
+      return { width: "6.67%", height: "8.53%" };
+    case "Medium":
+      return { width: "9.33%", height: "10.67%" };
+    case "Large":
+      return { width: "12%", height: "12.8%" };
+    default:
+      return { width: "8%", height: "10.67%" };
+  }
 };
 
 // -------------------------------------
@@ -106,6 +114,9 @@ export default function StallsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // View Mode State
+  const [viewMode, setViewMode] = useState<"Grid" | "Map">("Map");
+
   // Filter State
   const [statusFilter, setStatusFilter] = useState("All");
   const [sizeFilter, setSizeFilter] = useState("All");
@@ -113,9 +124,6 @@ export default function StallsPage() {
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingStall, setEditingStall] = useState<Stall | null>(null);
-
-  // --- NEW: View Mode State ---
-  const [viewMode, setViewMode] = useState<"grid" | "map">("grid");
 
   // --- Data Fetching ---
   useEffect(() => {
@@ -125,13 +133,8 @@ export default function StallsPage() {
       try {
         // --- DEVELOPMENT: Using Mock Data ---
         await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate delay
-        setStalls(mockStalls);
+        setStalls(mockStalls); // Using the new mockStalls list
         // --- END DEVELOPMENT ---
-
-        /* --- PRODUCTION: Real API Call (uncomment when ready) ---
-        const response = await API.get("/stalls");
-        setStalls(response.data);
-        */
       } catch (err) {
         console.error("Failed to fetch stalls:", err);
         setError("Failed to fetch stalls.");
@@ -176,7 +179,9 @@ export default function StallsPage() {
       console.log("--- DEV MODE: Edited stall ---", savedStall);
     } else {
       // Add new stall
-      const newStall = { ...savedStall, id: `stall-${Date.now()}` }; // Create a temp ID
+      // NOTE: New stalls added this way won't appear on the map
+      // unless you add them to the `stallPositions` object.
+      const newStall = { ...savedStall, id: `stall-${Date.now()}` };
       setStalls((prev) => [newStall, ...prev]);
       console.log("--- DEV MODE: Added new stall ---", newStall);
     }
@@ -188,10 +193,10 @@ export default function StallsPage() {
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-6">Manage Stalls</h1>
 
-      {/* --- Controls: Filters and Add Button --- */}
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex gap-4">
-          {/* Status Filter */}
+      {/* --- Controls: Filters, Add Button, View Toggle --- */}
+      <div className="flex flex-wrap gap-4 justify-between items-center mb-6">
+        {/* Filters */}
+        <div className="flex flex-wrap gap-4">
           <FilterDropdown
             label="Status"
             value={statusFilter}
@@ -203,7 +208,6 @@ export default function StallsPage() {
               { value: "Maintenance", label: "Maintenance" },
             ]}
           />
-          {/* Size Filter */}
           <FilterDropdown
             label="Size"
             value={sizeFilter}
@@ -216,30 +220,35 @@ export default function StallsPage() {
             ]}
           />
         </div>
-        
-        <div className="flex items-center gap-4">
-          {/* --- NEW: View Mode Toggle --- */}
-          <div className="flex items-center bg-gray-200 rounded-lg p-1">
+
+        {/* Buttons */}
+        <div className="flex gap-4">
+          {/* View Toggle */}
+          <div className="flex rounded-lg border border-gray-300 p-0.5 bg-gray-100">
             <button
-              onClick={() => setViewMode("grid")}
-              className={`flex items-center gap-2 px-3 py-1 rounded-md transition ${
-                viewMode === "grid" ? "bg-white shadow" : "text-gray-600"
+              onClick={() => setViewMode("Grid")}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium ${
+                viewMode === "Grid"
+                  ? "bg-white text-blue-600 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
               }`}
             >
               <LayoutGrid className="w-4 h-4" />
               Grid
             </button>
             <button
-              onClick={() => setViewMode("map")}
-              className={`flex items-center gap-2 px-3 py-1 rounded-md transition ${
-                viewMode === "map" ? "bg-white shadow" : "text-gray-600"
+              onClick={() => setViewMode("Map")}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium ${
+                viewMode === "Map"
+                  ? "bg-white text-blue-600 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
               }`}
             >
               <Map className="w-4 h-4" />
               Map
             </button>
           </div>
-          
+
           <button
             onClick={handleOpenAddModal}
             className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-sm hover:bg-blue-700 transition"
@@ -256,32 +265,20 @@ export default function StallsPage() {
       ) : error ? (
         <p className="text-center py-10 text-red-500">{error}</p>
       ) : (
-        <div>
-          {/* Show Grid View */}
-          {viewMode === "grid" && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredStalls.length === 0 ? (
-                 <p className="text-center py-10 text-gray-500 col-span-full">No stalls found for this filter.</p>
-              ) : (
-                filteredStalls.map((stall) => (
-                  <StallCard
-                    key={stall.id}
-                    stall={stall}
-                    onManageClick={() => handleOpenEditModal(stall)}
-                  />
-                ))
-              )}
-            </div>
-          )}
-          
-          {/* Show Map View */}
-          {viewMode === "map" && (
-            <StallMap
+        <>
+          {viewMode === "Grid" && (
+            <StallGrid
               stalls={filteredStalls}
+              onManageClick={handleOpenEditModal}
+            />
+          )}
+          {viewMode === "Map" && (
+            <StallMap
+              stalls={filteredStalls} // Pass filtered stalls to map
               onStallClick={handleOpenEditModal}
             />
           )}
-        </div>
+        </>
       )}
 
       {/* --- Add/Edit Modal --- */}
@@ -292,73 +289,6 @@ export default function StallsPage() {
           onSave={handleSaveStall}
         />
       )}
-    </div>
-  );
-}
-
-// -------------------------------------
-// --- NEW: Stall Map Component ---
-// -------------------------------------
-function StallMap({
-  stalls,
-  onStallClick,
-}: {
-  stalls: Stall[];
-  onStallClick: (stall: Stall) => void;
-}) {
-  const getSizeColor = (size: StallSize) => {
-    switch (size) {
-      case "Small":
-        return "bg-yellow-400 border-yellow-600"; // Yellow for Small
-      case "Medium":
-        return "bg-blue-400 border-blue-600"; // Blue for Medium
-      case "Large":
-        return "bg-red-400 border-red-600"; // Red for Large
-    }
-  };
-
-  const getStatusOpacity = (status: StallStatus) => {
-    // Available stalls are solid, others are faded
-    return status === "Available" ? "opacity-100" : "opacity-40";
-  };
-
-  return (
-    <div className="w-full bg-gray-100 border border-gray-300 rounded-lg overflow-hidden" style={{ height: "70vh" }}>
-      <div className="relative w-full h-full p-4">
-        {/* Map Legend - REMOVED */}
-
-        {/* Map Static Elements */}
-        <div className="absolute top-1/2 left-5 -translate-y-1/2 p-4 bg-gray-200 rounded">
-          <span className="text-gray-500 font-bold [writing-mode:vertical-rl] transform rotate-180">ENTRANCE A</span>
-        </div>
-        <div className="absolute bottom-5 left-1/2 -translate-x-1/2 p-4 bg-gray-200 rounded">
-          <span className="text-gray-500 font-bold">MAIN ENTRANCE</span>
-        </div>
-         <div className="absolute top-1/2 right-5 -translate-y-1/2 p-4 bg-gray-200 rounded">
-          <span className="text-gray-500 font-bold [writing-mode:vertical-rl]">ENTRANCE B</span>
-        </div>
-
-        {/* Render Stalls */}
-        {stalls.map((stall) => {
-          const layout = stallLayout[stall.name];
-          // If stall doesn't have a map position, don't render it
-          if (!layout) return null;
-
-          return (
-            <button
-              key={stall.id}
-              onClick={() => onStallClick(stall)}
-              style={layout}
-              className={`absolute border-2 rounded flex items-center justify-center font-bold text-white text-sm shadow
-                ${getSizeColor(stall.size)}
-                ${getStatusOpacity(stall.status)}
-                hover:opacity-100 hover:scale-110 hover:shadow-lg transition-all transform z-5`}
-            >
-              {stall.name}
-            </button>
-          );
-        })}
-      </div>
     </div>
   );
 }
@@ -397,6 +327,33 @@ function FilterDropdown({
 }
 
 // -------------------------------------
+// --- Stall Grid Component ---
+// (This is the card view)
+// -------------------------------------
+function StallGrid({
+  stalls,
+  onManageClick,
+}: {
+  stalls: Stall[];
+  onManageClick: (stall: Stall) => void;
+}) {
+  if (stalls.length === 0) {
+    return <p className="text-center py-10 text-gray-500">No stalls found.</p>;
+  }
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {stalls.map((stall) => (
+        <StallCard
+          key={stall.id}
+          stall={stall}
+          onManageClick={() => onManageClick(stall)}
+        />
+      ))}
+    </div>
+  );
+}
+
+// -------------------------------------
 // --- Stall Card Component ---
 // -------------------------------------
 function StallCard({
@@ -407,29 +364,14 @@ function StallCard({
   onManageClick: () => void;
 }) {
   const statusInfo = {
-    Available: {
-      Icon: CheckSquare,
-      color: "text-green-600",
-      borderColor: "border-green-200",
-      bgColor: "bg-green-50",
-    },
-    Reserved: {
-      Icon: XSquare,
-      color: "text-red-600",
-      borderColor: "border-red-200",
-      bgColor: "bg-red-50",
-    },
-    Maintenance: {
-      Icon: Wrench,
-      color: "text-yellow-600",
-      borderColor: "border-yellow-200",
-      bgColor: "bg-yellow-50",
-    },
+    Available: { color: "text-green-600", borderColor: "border-green-200", bgColor: "bg-green-50" },
+    Reserved: { color: "text-red-600", borderColor: "border-red-200", bgColor: "bg-red-50" },
+    Maintenance: { color: "text-yellow-600", borderColor: "border-yellow-200", bgColor: "bg-yellow-50" },
   }[stall.status];
 
   return (
     <div
-      className={`bg-white rounded-xl shadow-md overflow-hidden border-2 ${statusInfo.borderColor} ${statusInfo.bgColor} flex flex-col justify-between`}
+      className={`flex flex-col justify-between bg-white rounded-xl shadow-md overflow-hidden border-2 ${statusInfo.borderColor} ${statusInfo.bgColor}`}
     >
       <div className="p-5 flex-1">
         <div className="flex justify-between items-start">
@@ -441,7 +383,9 @@ function StallCard({
           </span>
         </div>
         <div className="flex items-center gap-2 mt-3">
-          <statusInfo.Icon className={`w-5 h-5 ${statusInfo.color}`} />
+          {stall.status === "Available" && <Map className={`w-5 h-5 ${statusInfo.color}`} />}
+          {stall.status === "Reserved" && <X className={`w-5 h-5 ${statusInfo.color}`} />}
+          {stall.status === "Maintenance" && <Wrench className={`w-5 h-5 ${statusInfo.color}`} />}
           <span className={`text-sm font-medium ${statusInfo.color}`}>
             {stall.status}
           </span>
@@ -465,7 +409,106 @@ function StallCard({
 }
 
 // -------------------------------------
+// --- NEW Stall Map Component ---
+// (Based on publisher's StallMap.tsx)
+// -------------------------------------
+function StallMap({
+  stalls,
+  onStallClick,
+}: {
+  stalls: Stall[];
+  onStallClick: (stall: Stall) => void;
+}) {
+  
+  // --- Helper functions for admin styling ---
+  const getSizeColor = (size: StallSize) => {
+    switch (size) {
+      case "Small": return "bg-yellow-400 border-yellow-600";
+      case "Medium": return "bg-blue-400 border-blue-600";
+      case "Large": return "bg-red-400 border-red-600";
+    }
+  };
+  const getStatusOpacity = (status: StallStatus) => {
+    return status === "Available" ? "opacity-100" : "opacity-40";
+  };
+  
+  return (
+    <div className="w-full max-w-[1200px] mx-auto">
+      {/* Floor plan container */}
+      <div className="relative aspect-8/5 bg-green-50 border-4 border-green-400 rounded-lg overflow-hidden">
+        {/* --- Static elements from publisher map --- */}
+        <div className="absolute left-0 top-0 w-[0.67%] sm:w-2 h-full bg-gray-600 min-w-2"></div>
+        <div className="absolute right-0 top-0 w-[0.67%] sm:w-2 h-full bg-gray-600 min-w-2"></div>
+        <div className="absolute top-[0.5%] left-1/2 -translate-x-1/2 bg-blue-400 text-white px-2 sm:px-3 py-0.5 sm:py-1 rounded text-xs sm:text-sm z-10 whitespace-nowrap">
+          Entrance
+        </div>
+        <div className="absolute bottom-[0.5%] left-1/2 -translate-x-1/2 bg-red-500 text-white px-2 sm:px-3 py-0.5 sm:py-1 rounded text-xs sm:text-sm z-10 whitespace-nowrap">
+          Exit
+        </div>
+        <div className="absolute top-[16%] left-1/2 -translate-x-1/2 bg-white px-2 sm:px-4 py-0.5 sm:py-1 rounded shadow text-xs sm:text-sm font-bold text-gray-700 z-10 whitespace-nowrap">
+          Small Stalls Area
+        </div>
+        <div className="absolute top-[53%] left-1/2 -translate-x-1/2 bg-white px-2 sm:px-4 py-0.5 sm:py-1 rounded shadow text-xs sm:text-sm font-bold text-gray-700 z-10 whitespace-nowrap">
+          Medium Stalls Area
+        </div>
+        <div className="absolute top-[76%] left-1/2 -translate-x-1/2 bg-white px-2 sm:px-4 py-0.5 sm:py-1 rounded shadow text-xs sm:text-sm font-bold text-gray-700 z-10 whitespace-nowrap">
+          Large Stalls Area
+        </div>
+        <div className="absolute top-[8%] left-[3%] w-[18%] sm:w-[22.67%] h-[30%] sm:h-[38.4%] bg-green-400 border-2 border-gray-500 rounded-lg shadow-md flex flex-col items-center justify-center text-center z-10 min-w-[150px] min-h-[150px]">
+          <span className="font-bold text-xs sm:text-sm">Restrooms</span>
+        </div>
+        <div className="absolute top-[45%] right-[8%] w-[12%] sm:w-[13.33%] h-[18%] sm:h-[21.33%] bg-green-400 border-2 border-gray-500 rounded-lg shadow-md flex flex-col items-center justify-center text-center z-10 min-w-[100px] min-h-[100px]">
+          <span className="font-bold text-xs sm:text-sm">Cafeteria</span>
+        </div>
+        <div className="absolute top-[13.5%] left-0 w-full h-[7.5%] sm:h-[8%] bg-green-200 opacity-75"></div>
+        <div className="absolute top-[29.5%] left-0 w-full h-[9.5%] sm:h-[10.67%] bg-green-200 opacity-75"></div>
+        <div className="absolute top-[50.5%] left-0 w-full h-[7.5%] sm:h-[8%] bg-green-200 opacity-75"></div>
+        <div className="absolute top-[69.5%] left-0 w-full h-[9.5%] sm:h-[10.67%] bg-green-200 opacity-75"></div>
+
+        {/* --- Render stalls (with ADMIN logic) --- */}
+        {stalls.map((stall) => {
+          const size = getStallSize(stall.size);
+          const position = stallPositions[stall.name];
+
+          // Don't render if stall has no position
+          if (!position) {
+             console.warn(`No map position for stall: ${stall.name}`);
+             return null;
+          }
+
+          return (
+            <button
+              key={stall.id}
+              onClick={() => onStallClick(stall)} // Admin "manage" click
+              title={
+                stall.status === "Reserved" && stall.publisherName
+                  ? `Reserved by ${stall.publisherName}`
+                  : `${stall.name} (${stall.status})`
+              }
+              className={`absolute flex flex-col items-center justify-center rounded-lg shadow-md text-center transition-all duration-200 cursor-pointer min-w-10 min-h-8
+                ${getSizeColor(stall.size)}
+                ${getStatusOpacity(stall.status)}
+                hover:opacity-100 hover:scale-105
+              `}
+              style={{
+                ...position,
+                ...size,
+                fontSize: "clamp(0.625rem, 0.75rem, 0.875rem)",
+              }}
+            >
+              <span className="font-bold text-white shadow-sm">{stall.name}</span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+
+// -------------------------------------
 // --- Manage Stall Modal Component ---
+// (This is unchanged and will work with the new map)
 // -------------------------------------
 function ManageStallModal({
   stall,
@@ -477,7 +520,7 @@ function ManageStallModal({
   onSave: (stall: Stall) => void;
 }) {
   const [name, setName] = useState(stall?.name || "");
-  const [size, setSize] = useState<StallSize>(stall?.size || "Medium");
+  const [size, setSize] = useState<StallSize>(stall?.size || "Small");
   const [status, setStatus] = useState<StallStatus>(stall?.status || "Available");
   const [publisherName, setPublisherName] = useState(stall?.publisherName || "");
 
@@ -528,7 +571,14 @@ function ManageStallModal({
                 onChange={(e) => setName(e.target.value)}
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
                 required
+                // If it's an existing stall on the map, make name read-only
+                readOnly={!isNew && stallPositions.hasOwnProperty(name)}
+                disabled={!isNew && stallPositions.hasOwnProperty(name)}
+                placeholder="e.g., D-01 (if not on map)"
               />
+              {!isNew && stallPositions.hasOwnProperty(name) && (
+                <p className="text-xs text-gray-500 mt-1">Stall name cannot be changed for map stalls.</p>
+              )}
             </div>
             {/* Stall Size */}
             <div>
@@ -543,6 +593,7 @@ function ManageStallModal({
                 value={size}
                 onChange={(e) => setSize(e.target.value as StallSize)}
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
+                disabled={!isNew && stallPositions.hasOwnProperty(name)}
               >
                 <option value="Small">Small</option>
                 <option value="Medium">Medium</option>
