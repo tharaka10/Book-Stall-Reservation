@@ -174,7 +174,7 @@ const StallMap: React.FC = () => {
       </div>
 
       {/* Floor plan - responsive with aspect ratio */}
-      <div className="relative w-full max-w-[1200px] aspect-8/5 bg-green-50 border-4 border-green-400 rounded-lg overflow-hidden mx-auto">
+      <div className="relative w-full max-w-[1200px] min-w-[700px] aspect-8/5 bg-green-50 border-4 border-green-400 rounded-lg overflow-hidden mx-auto">
         {/* Side walls for realism - responsive width */}
         <div className="absolute left-0 top-0 w-[0.67%] sm:w-2 h-full bg-gray-600 min-w-2"></div>
         <div className="absolute right-0 top-0 w-[0.67%] sm:w-2 h-full bg-gray-600 min-w-2"></div>
@@ -244,7 +244,7 @@ const StallMap: React.FC = () => {
               }}
             >
               <span className="font-bold">{stall.id}</span>
-              <span className="text-[0.625rem] sm:text-xs">{stall.type.toUpperCase()}</span>
+              {/* <span className="text-[0.625rem] sm:text-xs">{stall.type.toUpperCase()}</span> */}
             </div>
           );
         })}
