@@ -55,6 +55,7 @@ const StallMap: React.FC = () => {
   const [stalls, setStalls] = useState<STALL[]>(initialStalls);
   const [selected, setSelected] = useState<string[]>([]);
   const [qrUrl, setQrUrl] = useState<string | null>(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const handleSelect = (id: string, isReserved: boolean) => {
     if (isReserved) return toast.error("This stall is already reserved");
@@ -68,10 +69,14 @@ const StallMap: React.FC = () => {
     }
   };
 
-  const handleReserve = async () => {
+  const handleReserve = () => {
     if (selected.length === 0)
       return toast.error("Select at least one stall");
 
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmReservation = async () => {
     try {
       const updatedStalls = stalls.map((stall) =>
         selected.includes(stall.id)
@@ -99,9 +104,11 @@ const StallMap: React.FC = () => {
       toast.success(res.data.message || "Reservation successful");
       setQrUrl(res.data.qrUrl || null);
       setSelected([]);
+      setShowConfirmModal(false);
     } catch (err: any) {
       console.error(err);
       toast.error(err.response?.data?.message || "Reservation failed");
+      setShowConfirmModal(false);
     }
   };
 
@@ -258,6 +265,43 @@ const StallMap: React.FC = () => {
       >
         Confirm Reservation ({selected.length}/3)
       </button>
+
+      {/* Confirmation Modal */}
+      {showConfirmModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4">
+            <h2 className="text-xl font-bold mb-4 text-gray-800">Confirm Reservation</h2>
+            <p className="mb-4 text-gray-700">You are about to reserve the following stalls:</p>
+            <ul className="mb-4 list-disc pl-5 space-y-1">
+              {selected.map((id) => {
+                const stall = stalls.find((s) => s.id === id);
+                return (
+                  <li key={id} className="text-gray-700">
+                    {stall?.id} ({stall?.type})
+                  </li>
+                );
+              })}
+            </ul>
+            <p className="mb-4 text-sm text-gray-600">
+              Reserved by: {publisherName} ({publisherEmail})
+            </p>
+            <div className="flex justify-end gap-3 pt-4 border-t">
+              <button
+                onClick={() => setShowConfirmModal(false)}
+                className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmReservation}
+                className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-colors"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* QR download - responsive */}
       {qrUrl && (
