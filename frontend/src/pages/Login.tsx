@@ -31,7 +31,7 @@ const Login: React.FC = () => {
 
             
             if(role === "publisher") {
-                window.location.href = "/publisher";
+                window.location.href = "/publisher/home";
             } else if(role === "organizer") {
                 window.location.href = "/organizer";
             }
