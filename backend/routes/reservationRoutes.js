@@ -22,11 +22,37 @@
 
 // export default router;
 
+// import express from "express";
+// import { confirmReservation } from "../controllers/reservationController.js";
+// import { authenticateToken } from "../middleware/authJwt.js";
+
+// const router = express.Router();
+
+// // router.post("/reserve", confirmReservation);
+// router.post("/reserve", authenticateToken, confirmReservation);
+// export default router;
+
 import express from "express";
-import { confirmReservation } from "../controllers/reservationController.js";
+import {
+  getAllStalls,
+  confirmReservation,
+  getUserReservations,
+  unreserveStall,
+} from "../controllers/reservationController.js";
+import { authenticateToken } from "../middleware/authJwt.js";
 
 const router = express.Router();
 
-router.post("/reserve", confirmReservation);
+// ✅ Logged-in users can view stalls
+router.get("/stalls", authenticateToken, getAllStalls);
+
+// ✅ Logged-in publishers can reserve
+router.post("/reserve", authenticateToken, confirmReservation);
+
+// ✅ User’s reservations
+router.get("/user/:email", authenticateToken, getUserReservations);
+
+// ✅ Admin can unreserve manually
+router.delete("/admin/unreserve/:stallId", authenticateToken, unreserveStall);
 
 export default router;

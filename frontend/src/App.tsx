@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import OrganizerDashboard from './pages/OrganizerDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import StallMap from './pages/StallMap';
+import PublisherHome from './pages/PublisherHome';
 
 function App() {
   return (
@@ -43,6 +44,14 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["publisher"]}>
               <StallMap />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/publisher/home"
+          element={
+            <ProtectedRoute allowedRoles={["publisher"]}>
+              <PublisherHome />
             </ProtectedRoute>
           }
         />
