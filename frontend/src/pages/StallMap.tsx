@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
@@ -52,10 +52,25 @@ const StallMap: React.FC = () => {
     })),
   ];
 
-  const [stalls, setStalls] = useState<STALL[]>(initialStalls);
+  const [stalls, setStalls] = useState<STALL[]>(() => {
+    const saved = sessionStorage.getItem("stalls");
+    return saved ? JSON.parse(saved) : initialStalls;
+  });
   const [selected, setSelected] = useState<string[]>([]);
-  const [qrUrl, setQrUrl] = useState<string | null>(null);
+  const [qrUrl, setQrUrl] = useState<string | null>(() => {
+    return sessionStorage.getItem("qrUrl") || null;
+  });
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+  useEffect(() => {
+    sessionStorage.setItem("stalls", JSON.stringify(stalls));
+  }, [stalls]);
+
+  useEffect(() => {
+    if (qrUrl) {
+      sessionStorage.setItem("qrUrl", qrUrl);
+    }
+  }, [qrUrl]);
 
   const handleSelect = (id: string, isReserved: boolean) => {
     if (isReserved) return toast.error("This stall is already reserved");
