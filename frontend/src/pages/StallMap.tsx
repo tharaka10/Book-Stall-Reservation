@@ -349,11 +349,11 @@
 
 // export default StallMap;
 
-
 import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 interface STALL {
   id: string;
@@ -372,6 +372,7 @@ interface DecodedToken {
 
 const StallMap: React.FC = () => {
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
 
   let publisherEmail = "";
   let publisherName = "Unknown Publisher";
@@ -409,6 +410,8 @@ const StallMap: React.FC = () => {
   const [selected, setSelected] = useState<string[]>([]);
   const [qrUrl, setQrUrl] = useState<string | null>(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   // ✅ Fetch reserved stalls from Firestore via backend
   const fetchReservedStalls = async () => {
@@ -457,6 +460,7 @@ const StallMap: React.FC = () => {
   // ✅ Confirm reservation
   const handleConfirmReservation = async () => {
     try {
+      setIsLoading(true);
       const res = await axios.post(
         "http://localhost:5000/api/reservations/reserve",
         {
@@ -468,12 +472,20 @@ const StallMap: React.FC = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
+      setIsLoading(false);
       toast.success(res.data.message || "Reservation successful");
       setQrUrl(res.data.qrUrl || null);
       setSelected([]);
       setShowConfirmModal(false);
       await fetchReservedStalls(); // refresh after booking
+      setIsRedirecting(true);
+      setTimeout(() => {
+        setIsRedirecting(false);
+        navigate("/publisher/home");
+      }, 3000);
+
     } catch (err: any) {
+      setIsLoading(false);
       console.error(err);
       toast.error(err.response?.data?.message || "Reservation failed");
       setShowConfirmModal(false);
@@ -526,6 +538,21 @@ const StallMap: React.FC = () => {
     L5: { top: "81.07%", left: "65.75%" },
     L6: { top: "81.07%", left: "80.25%" },
   };
+
+  if (isRedirecting) {
+    return (
+      <div className="fixed inset-0 bg-gray-100 flex items-center justify-center z-50 p-4">
+        <div className="bg-white p-8 rounded-lg shadow-2xl max-w-md w-full mx-4 border border-yellow-500 text-center">
+          <div className="w-16 h-16 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <h2 className="text-xl font-bold mb-2 text-gray-800">Reservation Confirmed! 🎉</h2>
+          <p className="text-gray-600 mb-6">Redirecting to your publisher home...</p>
+          <div className="flex justify-center">
+            <div className="w-8 h-8 bg-yellow-500 rounded-full animate-bounce"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center bg-gray-100 p-4 sm:p-6">
@@ -658,8 +685,8 @@ const StallMap: React.FC = () => {
         </div>
       )} */}
       {showConfirmModal && (
-  <div className="fixed inset-0 flex items-center justify-center z-50 p-4 pointer-events-none">
-    <div className="bg-white p-6 rounded-lg shadow-2xl max-w-md w-full mx-4 border border-yellow-500 pointer-events-auto">
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="bg-white p-6 rounded-lg shadow-2xl max-w-md w-full mx-4 border border-yellow-500">
       <h2 className="text-xl font-bold mb-4 text-gray-800">Confirm Reservation</h2>
       <p className="mb-3 text-gray-700">You are about to reserve the following stalls:</p>
       <ul className="mb-4 list-disc pl-5 space-y-1">
@@ -674,14 +701,23 @@ const StallMap: React.FC = () => {
         <button
           onClick={() => setShowConfirmModal(false)}
           className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-lg transition-colors"
+          disabled={isLoading}
         >
           Cancel
         </button>
         <button
           onClick={handleConfirmReservation}
-          className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-colors"
+          disabled={isLoading} // ✅ Disable button when loading
+          className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 justify-center" // ✅ Add disabled styles and flex for spinner
         >
-          Confirm
+          {isLoading ? (
+            <>
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> {/* ✅ Simple spinner */}
+              Processing...
+            </>
+          ) : (
+            "Confirm"
+          )}
         </button>
       </div>
     </div>
@@ -690,7 +726,7 @@ const StallMap: React.FC = () => {
 
 
       {/* QR Download */}
-      {qrUrl && (
+      {/* {qrUrl && (
         <div className="mt-10 text-center flex flex-col items-center">
           <h2 className="text-2xl font-semibold text-yellow-700 mb-4">
             Reservation Confirmed 🎉
@@ -710,11 +746,11 @@ const StallMap: React.FC = () => {
             ⬇️ Download QR Code
           </a>
         </div>
-      )}
+      )} */}
     </div>
   );
 };
 
 export default StallMap;
 
-//test
+//test 3
