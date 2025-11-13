@@ -556,7 +556,7 @@ const StallMap: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center bg-gray-100 p-4 sm:p-6">
-      <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-yellow-700">
+      <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-black">
         STALL Floor Plan
       </h1>
 
@@ -567,7 +567,7 @@ const StallMap: React.FC = () => {
           <span>Available</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 sm:w-5 sm:h-5 bg-yellow-500 border border-gray-400 rounded"></div>
+          <div className="w-4 h-4 sm:w-5 sm:h-5 bg-yellow-400 border border-gray-400 rounded"></div>
           <span>Selected</span>
         </div>
         <div className="flex items-center gap-2">
@@ -582,33 +582,39 @@ const StallMap: React.FC = () => {
         <div className="absolute right-0 top-0 w-[0.67%] sm:w-2 h-full bg-gray-600 min-w-2"></div>
 
         {/* Entrance - responsive positioning */}
-        <div className="absolute top-[0.5%] left-1/2 -translate-x-1/2 bg-blue-400 text-white px-2 sm:px-3 py-0.5 sm:py-1 rounded text-xs sm:text-sm z-10 whitespace-nowrap">
+        <div className="absolute top-[0.5%] left-1/2 -translate-x-1/2 text-green-600 font-bold text-xs sm:text-sm z-10 whitespace-nowrap">
           Entrance
         </div>
 
         {/* Exit */}
-        <div className="absolute bottom-[0.5%] left-1/2 -translate-x-1/2 bg-red-500 text-white px-2 sm:px-3 py-0.5 sm:py-1 rounded text-xs sm:text-sm z-10 whitespace-nowrap">
+        <div className="absolute bottom-[0.5%] left-1/2 -translate-x-1/2 text-red-500 font-bold text-xs sm:text-sm z-10 whitespace-nowrap">
           Exit
         </div>
 
         {/* Section labels - responsive */}
-        <div className="absolute top-[16%] left-1/2 -translate-x-1/2 bg-white px-2 sm:px-4 py-0.5 sm:py-1 rounded shadow text-xs sm:text-sm font-bold text-gray-700 z-10 whitespace-nowrap">
+        <div className="absolute top-[16%] left-1/2 -translate-x-1/2  text-xs sm:text-sm font-bold text-gray-400 z-10 whitespace-nowrap">
           Small Stalls Area
         </div>
-        <div className="absolute top-[53%] left-1/2 -translate-x-1/2 bg-white px-2 sm:px-4 py-0.5 sm:py-1 rounded shadow text-xs sm:text-sm font-bold text-gray-700 z-10 whitespace-nowrap">
+        <div className="absolute top-[53%] left-1/2 -translate-x-1/2  text-xs sm:text-sm font-bold text-gray-400 z-10 whitespace-nowrap">
           Medium Stalls Area
         </div>
-        <div className="absolute top-[76%] left-1/2 -translate-x-1/2 bg-white px-2 sm:px-4 py-0.5 sm:py-1 rounded shadow text-xs sm:text-sm font-bold text-gray-700 z-10 whitespace-nowrap">
+        <div className="absolute top-[76%] left-1/2 -translate-x-1/2  text-xs sm:text-sm font-bold text-gray-400 z-10 whitespace-nowrap">
           Large Stalls Area
         </div>
 
         {/* Restrooms, Cafeteria, Walkways */}
-        <div className="absolute top-[8%] left-[3%] w-[18%] h-[30%] bg-green-400 border-2 border-gray-500 rounded-lg flex flex-col items-center justify-center text-center">
+        <div className="absolute top-[8%] left-[3%] w-[18%] sm:w-[22.67%] h-[30%] sm:h-[38.4%] bg-green-400 border-2 border-gray-500 rounded-lg shadow-md flex flex-col items-center justify-center text-center z-10 min-w-[150px] min-h-[150px]">
           <span className="font-bold text-xs sm:text-sm">Restrooms</span>
         </div>
-        <div className="absolute top-[45%] right-[8%] w-[12%] h-[18%] bg-green-400 border-2 border-gray-500 rounded-lg flex flex-col items-center justify-center text-center">
+        <div className="absolute top-[45%] right-[8%] w-[12%] sm:w-[13.33%] h-[18%] sm:h-[21.33%] bg-green-400 border-2 border-gray-500 rounded-lg shadow-md flex flex-col items-center justify-center text-center z-10 min-w-[100px] min-h-[100px]">
           <span className="font-bold text-xs sm:text-sm">Cafeteria</span>
         </div>
+
+        <div className="absolute top-[13.5%] left-0 w-full h-[7.5%] sm:h-[8%] bg-green-200 opacity-75"></div>
+        <div className="absolute top-[29.5%] left-0 w-full h-[9.5%] sm:h-[10.67%] bg-green-200 opacity-75"></div>
+        <div className="absolute top-[50.5%] left-0 w-full h-[7.5%] sm:h-[8%] bg-green-200 opacity-75"></div>
+        <div className="absolute top-[69.5%] left-0 w-full h-[9.5%] sm:h-[10.67%] bg-green-200 opacity-75"></div>
+
 
         {/* Render all stalls */}
         {stalls.map((stall) => {
@@ -622,12 +628,12 @@ const StallMap: React.FC = () => {
                   ? "This stall is reserved"
                   : `${stall.type.toUpperCase()} STALL`
               }
-              className={`absolute flex flex-col items-center justify-center rounded-lg shadow-md text-center transition-all duration-200 cursor-pointer
+              className={`text-xs absolute flex flex-col items-center justify-center rounded-lg shadow-md text-center transition-all duration-200 cursor-pointer
         ${stall.isReserved
-                  ? "bg-gray-400 text-white cursor-not-allowed"
+                  ? "bg-gray-200 text-white cursor-not-allowed"
                   : selected.includes(stall.id)
-                    ? "bg-yellow-500 text-white scale-105"
-                    : "bg-amber-200 hover:bg-amber-300"
+                    ? "bg-blue-500 text-black scale-105"
+                    : "bg-yellow-400 hover:bg-yellow-500"
                 }`}
               style={{ ...stallPositions[stall.id], ...size }}
             >
@@ -717,7 +723,7 @@ const StallMap: React.FC = () => {
                 <li key={id} className="text-gray-700">{id}</li>
               ))}
             </ul>
-            <p className="text-sm text-gray-600 mb-4">
+            <p className="text-sm text-gray-100 mb-4">
               Reserved by: {publisherName} ({publisherEmail})
             </p>
             <div className="flex justify-end gap-3 border-t pt-4">
