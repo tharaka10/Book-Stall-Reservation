@@ -610,10 +610,10 @@ const StallMap: React.FC = () => {
           <span className="font-bold text-xs sm:text-sm">Cafeteria</span>
         </div>
 
-        <div className="absolute top-[13.5%] left-0 w-full h-[7.5%] sm:h-[8%] bg-green-200 opacity-75"></div>
+        {/* <div className="absolute top-[13.5%] left-0 w-full h-[7.5%] sm:h-[8%] bg-green-200 opacity-75"></div>
         <div className="absolute top-[29.5%] left-0 w-full h-[9.5%] sm:h-[10.67%] bg-green-200 opacity-75"></div>
         <div className="absolute top-[50.5%] left-0 w-full h-[7.5%] sm:h-[8%] bg-green-200 opacity-75"></div>
-        <div className="absolute top-[69.5%] left-0 w-full h-[9.5%] sm:h-[10.67%] bg-green-200 opacity-75"></div>
+        <div className="absolute top-[69.5%] left-0 w-full h-[9.5%] sm:h-[10.67%] bg-green-200 opacity-75"></div> */}
 
 
         {/* Render all stalls */}
