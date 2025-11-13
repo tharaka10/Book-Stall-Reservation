@@ -426,11 +426,11 @@ const StallMap: React.FC = () => {
         const reservedMatch = reservedData.find((r: any) => r.id === stall.id);
         return reservedMatch
           ? {
-              ...stall,
-              isReserved: reservedMatch.isReserved || false,
-              reservedBy: reservedMatch.reservedBy || null,
-              publisherName: reservedMatch.publisherName || null,
-            }
+            ...stall,
+            isReserved: reservedMatch.isReserved || false,
+            reservedBy: reservedMatch.reservedBy || null,
+            publisherName: reservedMatch.publisherName || null,
+          }
           : stall;
       });
 
@@ -576,8 +576,32 @@ const StallMap: React.FC = () => {
         </div>
       </div>
 
-      {/* Map area */}
       <div className="relative w-full max-w-[1200px] min-w-[700px] aspect-8/5 bg-green-50 border-4 border-green-400 rounded-lg overflow-hidden mx-auto">
+        {/* Side walls for realism - responsive width */}
+        <div className="absolute left-0 top-0 w-[0.67%] sm:w-2 h-full bg-gray-600 min-w-2"></div>
+        <div className="absolute right-0 top-0 w-[0.67%] sm:w-2 h-full bg-gray-600 min-w-2"></div>
+
+        {/* Entrance - responsive positioning */}
+        <div className="absolute top-[0.5%] left-1/2 -translate-x-1/2 bg-blue-400 text-white px-2 sm:px-3 py-0.5 sm:py-1 rounded text-xs sm:text-sm z-10 whitespace-nowrap">
+          Entrance
+        </div>
+
+        {/* Exit */}
+        <div className="absolute bottom-[0.5%] left-1/2 -translate-x-1/2 bg-red-500 text-white px-2 sm:px-3 py-0.5 sm:py-1 rounded text-xs sm:text-sm z-10 whitespace-nowrap">
+          Exit
+        </div>
+
+        {/* Section labels - responsive */}
+        <div className="absolute top-[16%] left-1/2 -translate-x-1/2 bg-white px-2 sm:px-4 py-0.5 sm:py-1 rounded shadow text-xs sm:text-sm font-bold text-gray-700 z-10 whitespace-nowrap">
+          Small Stalls Area
+        </div>
+        <div className="absolute top-[53%] left-1/2 -translate-x-1/2 bg-white px-2 sm:px-4 py-0.5 sm:py-1 rounded shadow text-xs sm:text-sm font-bold text-gray-700 z-10 whitespace-nowrap">
+          Medium Stalls Area
+        </div>
+        <div className="absolute top-[76%] left-1/2 -translate-x-1/2 bg-white px-2 sm:px-4 py-0.5 sm:py-1 rounded shadow text-xs sm:text-sm font-bold text-gray-700 z-10 whitespace-nowrap">
+          Large Stalls Area
+        </div>
+
         {/* Restrooms, Cafeteria, Walkways */}
         <div className="absolute top-[8%] left-[3%] w-[18%] h-[30%] bg-green-400 border-2 border-gray-500 rounded-lg flex flex-col items-center justify-center text-center">
           <span className="font-bold text-xs sm:text-sm">Restrooms</span>
@@ -588,30 +612,29 @@ const StallMap: React.FC = () => {
 
         {/* Render all stalls */}
         {stalls.map((stall) => {
-  const size = getStallSize(stall.type);
-  return (
-    <div
-      key={stall.id}
-      onClick={() => handleSelect(stall.id, stall.isReserved)}
-      title={
-        stall.isReserved
-          ? "This stall is reserved"
-          : `${stall.type.toUpperCase()} STALL`
-      }
-      className={`absolute flex flex-col items-center justify-center rounded-lg shadow-md text-center transition-all duration-200 cursor-pointer
-        ${
-          stall.isReserved
-            ? "bg-gray-400 text-white cursor-not-allowed"
-            : selected.includes(stall.id)
-            ? "bg-yellow-500 text-white scale-105"
-            : "bg-amber-200 hover:bg-amber-300"
-        }`}
-      style={{ ...stallPositions[stall.id], ...size }}
-    >
-      <span className="font-bold">{stall.id}</span>
-    </div>
-  );
-})}
+          const size = getStallSize(stall.type);
+          return (
+            <div
+              key={stall.id}
+              onClick={() => handleSelect(stall.id, stall.isReserved)}
+              title={
+                stall.isReserved
+                  ? "This stall is reserved"
+                  : `${stall.type.toUpperCase()} STALL`
+              }
+              className={`absolute flex flex-col items-center justify-center rounded-lg shadow-md text-center transition-all duration-200 cursor-pointer
+        ${stall.isReserved
+                  ? "bg-gray-400 text-white cursor-not-allowed"
+                  : selected.includes(stall.id)
+                    ? "bg-yellow-500 text-white scale-105"
+                    : "bg-amber-200 hover:bg-amber-300"
+                }`}
+              style={{ ...stallPositions[stall.id], ...size }}
+            >
+              <span className="font-bold">{stall.id}</span>
+            </div>
+          );
+        })}
 
         {/* {stalls.map((stall) => {
           const size = getStallSize(stall.type);
@@ -685,44 +708,44 @@ const StallMap: React.FC = () => {
         </div>
       )} */}
       {showConfirmModal && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-    <div className="bg-white p-6 rounded-lg shadow-2xl max-w-md w-full mx-4 border border-yellow-500">
-      <h2 className="text-xl font-bold mb-4 text-gray-800">Confirm Reservation</h2>
-      <p className="mb-3 text-gray-700">You are about to reserve the following stalls:</p>
-      <ul className="mb-4 list-disc pl-5 space-y-1">
-        {selected.map((id) => (
-          <li key={id} className="text-gray-700">{id}</li>
-        ))}
-      </ul>
-      <p className="text-sm text-gray-600 mb-4">
-        Reserved by: {publisherName} ({publisherEmail})
-      </p>
-      <div className="flex justify-end gap-3 border-t pt-4">
-        <button
-          onClick={() => setShowConfirmModal(false)}
-          className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-lg transition-colors"
-          disabled={isLoading}
-        >
-          Cancel
-        </button>
-        <button
-          onClick={handleConfirmReservation}
-          disabled={isLoading} // ✅ Disable button when loading
-          className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 justify-center" // ✅ Add disabled styles and flex for spinner
-        >
-          {isLoading ? (
-            <>
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> {/* ✅ Simple spinner */}
-              Processing...
-            </>
-          ) : (
-            "Confirm"
-          )}
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white p-6 rounded-lg shadow-2xl max-w-md w-full mx-4 border border-yellow-500">
+            <h2 className="text-xl font-bold mb-4 text-gray-800">Confirm Reservation</h2>
+            <p className="mb-3 text-gray-700">You are about to reserve the following stalls:</p>
+            <ul className="mb-4 list-disc pl-5 space-y-1">
+              {selected.map((id) => (
+                <li key={id} className="text-gray-700">{id}</li>
+              ))}
+            </ul>
+            <p className="text-sm text-gray-600 mb-4">
+              Reserved by: {publisherName} ({publisherEmail})
+            </p>
+            <div className="flex justify-end gap-3 border-t pt-4">
+              <button
+                onClick={() => setShowConfirmModal(false)}
+                className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-lg transition-colors"
+                disabled={isLoading}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmReservation}
+                disabled={isLoading} // ✅ Disable button when loading
+                className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 justify-center" // ✅ Add disabled styles and flex for spinner
+              >
+                {isLoading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> {/* ✅ Simple spinner */}
+                    Processing...
+                  </>
+                ) : (
+                  "Confirm"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
 
       {/* QR Download */}
