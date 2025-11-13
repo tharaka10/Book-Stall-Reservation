@@ -1,5 +1,14 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  BookOpenIcon,
+  MapIcon,
+  BoltIcon,
+  LockClosedIcon,
+  QrCodeIcon,
+  BriefcaseIcon,
+  EnvelopeIcon,
+} from "@heroicons/react/24/outline";
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
@@ -11,8 +20,9 @@ const LandingPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
+              <BookOpenIcon className="h-8 w-8 text-yellow-600 mr-2" />
               <h1 className="text-2xl font-bold text-yellow-600">
-                📚 Book Fair Stalls
+                Book Fair Stalls
               </h1>
             </div>
             <div className="flex space-x-4">
@@ -67,7 +77,7 @@ const LandingPage: React.FC = () => {
         <div className="grid md:grid-cols-3 gap-8">
           {/* Feature 1 */}
           <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-2">
-            <div className="text-5xl mb-4">🗺️</div>
+            <MapIcon className="h-12 w-12 text-yellow-600 mb-4" />
             <h4 className="text-xl font-bold text-gray-800 mb-3">
               Interactive Stall Map
             </h4>
@@ -79,7 +89,7 @@ const LandingPage: React.FC = () => {
 
           {/* Feature 2 */}
           <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-2">
-            <div className="text-5xl mb-4">⚡</div>
+            <BoltIcon className="h-12 w-12 text-yellow-600 mb-4" />
             <h4 className="text-xl font-bold text-gray-800 mb-3">
               Instant Booking
             </h4>
@@ -91,7 +101,7 @@ const LandingPage: React.FC = () => {
 
           {/* Feature 3 */}
           <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-2">
-            <div className="text-5xl mb-4">🔐</div>
+            <LockClosedIcon className="h-12 w-12 text-yellow-600 mb-4" />
             <h4 className="text-xl font-bold text-gray-800 mb-3">
               Secure & Reliable
             </h4>
@@ -103,7 +113,7 @@ const LandingPage: React.FC = () => {
 
           {/* Feature 4 */}
           <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-2">
-            <div className="text-5xl mb-4">📱</div>
+            <QrCodeIcon className="h-12 w-12 text-yellow-600 mb-4" />
             <h4 className="text-xl font-bold text-gray-800 mb-3">
               Digital QR Codes
             </h4>
@@ -114,7 +124,7 @@ const LandingPage: React.FC = () => {
 
           {/* Feature 5 */}
           <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-2">
-            <div className="text-5xl mb-4">💼</div>
+            <BriefcaseIcon className="h-12 w-12 text-yellow-600 mb-4" />
             <h4 className="text-xl font-bold text-gray-800 mb-3">
               Publisher Dashboard
             </h4>
@@ -125,7 +135,7 @@ const LandingPage: React.FC = () => {
 
           {/* Feature 6 */}
           <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-2">
-            <div className="text-5xl mb-4">📧</div>
+            <EnvelopeIcon className="h-12 w-12 text-yellow-600 mb-4" />
             <h4 className="text-xl font-bold text-gray-800 mb-3">
               Email Notifications
             </h4>
