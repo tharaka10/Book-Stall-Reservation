@@ -483,6 +483,20 @@ function StallMap({
   stalls: Stall[];
   onStallClick: (stall: Stall) => void;
 }) {
+  
+  // --- Helper functions for admin styling ---
+  const getSizeColor = (size: StallSize) => {
+    switch (size) {
+      case "Small": return "bg-yellow-400 border-yellow-600";
+      case "Medium": return "bg-yellow-400 border-blue-600";
+      case "Large": return "bg-yellow-400 border-red-600";
+    }
+  };
+  const getStatusOpacity = (status: StallStatus) => {
+    // Maintenance and Reserved stalls are faded
+    return status === "Available" ? "opacity-100" : "grayscale opacity-60";
+  };
+  
   return (
     <div className="w-full max-w-[1200px] mx-auto">
       
@@ -507,19 +521,19 @@ function StallMap({
         {/* --- Static elements from publisher map --- */}
         <div className="absolute left-0 top-0 w-[0.67%] sm:w-2 h-full bg-gray-600 min-w-2"></div>
         <div className="absolute right-0 top-0 w-[0.67%] sm:w-2 h-full bg-gray-600 min-w-2"></div>
-        <div className="absolute top-[0.5%] left-1/2 -translate-x-1/2 bg-blue-400 text-white px-2 sm:px-3 py-0.5 sm:py-1 rounded text-xs sm:text-sm z-10 whitespace-nowrap">
+        <div className="absolute top-[0.5%] left-1/2 -translate-x-1/2 text-green-500 font-bold text-xs sm:text-sm z-10 whitespace-nowrap">
           Entrance
         </div>
-        <div className="absolute bottom-[0.5%] left-1/2 -translate-x-1/2 bg-red-500 text-white px-2 sm:px-3 py-0.5 sm:py-1 rounded text-xs sm:text-sm z-10 whitespace-nowrap">
+        <div className="absolute bottom-[0.5%] left-1/2 -translate-x-1/2 text-red-500 font-bold text-xs sm:text-sm z-10 whitespace-nowrap">
           Exit
         </div>
-        <div className="absolute top-[16%] left-1/2 -translate-x-1/2 bg-white px-2 sm:px-4 py-0.5 sm:py-1 rounded shadow text-xs sm:text-sm font-bold text-gray-700 z-10 whitespace-nowrap">
+        <div className="absolute top-[16%] left-1/2 -translate-x-1/2 text-xs sm:text-sm font-bold text-gray-400 z-10 whitespace-nowrap">
           Small Stalls Area
         </div>
-        <div className="absolute top-[53%] left-1/2 -translate-x-1/2 bg-white px-2 sm:px-4 py-0.5 sm:py-1 rounded shadow text-xs sm:text-sm font-bold text-gray-700 z-10 whitespace-nowrap">
+        <div className="absolute top-[53%] left-1/2 -translate-x-1/2 text-xs sm:text-sm font-bold text-gray-400 z-10 whitespace-nowrap">
           Medium Stalls Area
         </div>
-        <div className="absolute top-[76%] left-1/2 -translate-x-1/2 bg-white px-2 sm:px-4 py-0.5 sm:py-1 rounded shadow text-xs sm:text-sm font-bold text-gray-700 z-10 whitespace-nowrap">
+        <div className="absolute top-[76%] left-1/2 -translate-x-1/2 text-xs sm:text-sm font-bold text-gray-400 z-10 whitespace-nowrap">
           Large Stalls Area
         </div>
         <div className="absolute top-[8%] left-[3%] w-[18%] sm:w-[22.67%] h-[30%] sm:h-[38.4%] bg-green-400 border-2 border-gray-500 rounded-lg shadow-md flex flex-col items-center justify-center text-center z-10 min-w-[150px] min-h-[150px]">
@@ -568,7 +582,7 @@ function StallMap({
                 fontSize: "clamp(0.625rem, 0.75rem, 0.875rem)",
               }}
             >
-              <span className="font-bold">{stall.name}</span>
+              <span className="font-bold text-black shadow-sm">{stall.name}</span>
             </button>
           );
         })}
