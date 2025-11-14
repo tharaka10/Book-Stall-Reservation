@@ -485,17 +485,17 @@ function StallMap({
 }) {
   
   // --- Helper functions for admin styling ---
-  const getSizeColor = (size: StallSize) => {
-    switch (size) {
-      case "Small": return "bg-yellow-400 border-yellow-600";
-      case "Medium": return "bg-yellow-400 border-blue-600";
-      case "Large": return "bg-yellow-400 border-red-600";
-    }
-  };
-  const getStatusOpacity = (status: StallStatus) => {
-    // Maintenance and Reserved stalls are faded
-    return status === "Available" ? "opacity-100" : "grayscale opacity-60";
-  };
+  // const getSizeColor = (size: StallSize) => {
+  //   switch (size) {
+  //     case "Small": return "bg-yellow-400 border-yellow-600";
+  //     case "Medium": return "bg-yellow-400 border-blue-600";
+  //     case "Large": return "bg-yellow-400 border-red-600";
+  //   }
+  // };
+  // const getStatusOpacity = (status: StallStatus) => {
+  //   // Maintenance and Reserved stalls are faded
+  //   return status === "Available" ? "opacity-100" : "grayscale opacity-60";
+  // };
   
   return (
     <div className="w-full max-w-[1200px] mx-auto">

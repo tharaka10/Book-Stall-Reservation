@@ -781,7 +781,7 @@ import toast from "react-hot-toast";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
+import { ArrowRightOnRectangleIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
 
 interface STALL {
   id: string;
@@ -856,11 +856,11 @@ const StallMap: React.FC = () => {
         const match = reservedData.find((r: any) => r.id === stall.id);
         return match
           ? {
-              ...stall,
-              isReserved: match.isReserved,
-              reservedBy: match.reservedBy,
-              publisherName: match.publisherName,
-            }
+            ...stall,
+            isReserved: match.isReserved,
+            reservedBy: match.reservedBy,
+            publisherName: match.publisherName,
+          }
           : stall;
       });
 
@@ -1031,10 +1031,12 @@ const StallMap: React.FC = () => {
       <div className="w-full max-w-[1200px] flex justify-between mb-4">
         <button
           onClick={() => navigate("/publisher/home")}
-          className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg"
+          className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-5 py-2 rounded-xl flex items-center gap-2"
         >
-          ⬅ Back
+          <ArrowLeftIcon className="h-5 w-5" />
+          Back
         </button>
+
 
         <button
           onClick={handleLogout}
@@ -1106,42 +1108,41 @@ const StallMap: React.FC = () => {
           const size = getStallSize(stall.type);
           return (
             <div
-  key={stall.id}
-  className="absolute"
-  style={{ ...stallPositions[stall.id], ...size }}
->
+              key={stall.id}
+              className="absolute"
+              style={{ ...stallPositions[stall.id], ...size }}
+            >
 
-  {/* ⭐ Tooltip (appears only when user cannot select the stall) */}
-  {(stall.isReserved || currentReservedCount >= 3) && (
-    <div className="absolute -top-7 left-1/2 -translate-x-1/2 pointer-events-none opacity-0 hover:opacity-100 transition-opacity duration-200">
-      <div className="bg-yellow-400 text-black text-xs font-semibold px-2 py-1 rounded shadow-lg whitespace-nowrap border border-yellow-600">
-        {stall.isReserved
-          ? "This stall is already reserved"
-          : "You have reached your 3-stall limit"}
-      </div>
-    </div>
-  )}
+              {/* ⭐ Tooltip (appears only when user cannot select the stall) */}
+              {(stall.isReserved || currentReservedCount >= 3) && (
+                <div className="absolute -top-7 left-1/2 -translate-x-1/2 pointer-events-none opacity-0 hover:opacity-100 transition-opacity duration-200">
+                  <div className="bg-yellow-400 text-black text-xs font-semibold px-2 py-1 rounded shadow-lg whitespace-nowrap border border-yellow-600">
+                    {stall.isReserved
+                      ? "This stall is already reserved"
+                      : "You have reached your 3-stall limit"}
+                  </div>
+                </div>
+              )}
 
-  {/* ⭐ Actual Stall Box */}
-  <div
-    onClick={() => handleSelect(stall.id, stall.isReserved)}
-    className={`
+              {/* ⭐ Actual Stall Box */}
+              <div
+                onClick={() => handleSelect(stall.id, stall.isReserved)}
+                className={`
       text-xs flex items-center justify-center rounded-lg shadow-md cursor-pointer h-full w-full
-      ${
-        stall.isReserved
-          ? "bg-gray-400 text-white cursor-not-allowed"
-          : currentReservedCount >= 3
-          ? "bg-amber-200 text-black opacity-60 cursor-not-allowed"
-          : selected.includes(stall.id)
-          ? "bg-yellow-500 text-white scale-105"
-          : "bg-amber-200 hover:bg-amber-300"
-      }
+      ${stall.isReserved
+                    ? "bg-gray-400 text-white cursor-not-allowed"
+                    : currentReservedCount >= 3
+                      ? "bg-amber-200 text-black opacity-60 cursor-not-allowed"
+                      : selected.includes(stall.id)
+                        ? "bg-yellow-500 text-white scale-105"
+                        : "bg-amber-200 hover:bg-amber-300"
+                  }
     `}
-  >
-    <span className="font-bold">{stall.id}</span>
-  </div>
+              >
+                <span className="font-bold">{stall.id}</span>
+              </div>
 
-</div>
+            </div>
 
           );
         })}
@@ -1149,20 +1150,20 @@ const StallMap: React.FC = () => {
 
       {/* CONFIRM BUTTON */}
       {/* CONFIRM BUTTON */}
-<button
-  onClick={handleReserve}
-  disabled={selected.length === 0}
-  className="mt-6 sm:mt-8 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold px-6 py-2 rounded-lg disabled:opacity-50"
->
-  Confirm Reservation ({selected.length}/3)
-</button>
+      <button
+        onClick={handleReserve}
+        disabled={selected.length === 0}
+        className="mt-6 sm:mt-8 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold px-6 py-2 rounded-lg disabled:opacity-50"
+      >
+        Confirm Reservation ({selected.length}/3)
+      </button>
 
-{/* ⭐ LIMIT REACHED MESSAGE ⭐ */}
-{currentReservedCount >= 3 && (
-  <p className="text-red-600 text-sm mt-2 font-semibold">
-    You have reached the maximum limit of 3 stalls.
-  </p>
-)}
+      {/* ⭐ LIMIT REACHED MESSAGE ⭐ */}
+      {currentReservedCount >= 3 && (
+        <p className="text-red-600 text-sm mt-2 font-semibold">
+          You have reached the maximum limit of 3 stalls.
+        </p>
+      )}
 
 
       {/* CONFIRM MODAL */}
