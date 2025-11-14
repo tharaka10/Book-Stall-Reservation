@@ -33,7 +33,9 @@ const app = express();
 // ✅ Use CORS properly
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:5174"], // your React app URL
+    origin: ["http://localhost:5173", "http://localhost:5174", 
+      "https://publisher-portal.web.app",
+      "https://organizer-portal-bookfair.web.app"], // your React app URL
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
